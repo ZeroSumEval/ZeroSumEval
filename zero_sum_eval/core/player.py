@@ -8,7 +8,7 @@ import time
 from dspy.primitives import assert_transform_module, backtrack_handler
 from zero_sum_eval.utils.checkpointing import save_checkpoint, load_checkpoint, get_cached_module_path
 from zero_sum_eval.utils.types import Action, ActionConfig, Move
-from zero_sum_eval.core.game_state import InvalidMoveError
+from zero_sum_eval.core import InvalidMoveError
 
 # Disable debugging logs of litellm
 import litellm
