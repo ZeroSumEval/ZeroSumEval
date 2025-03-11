@@ -10,15 +10,13 @@ from typing import Dict, List
 
 from zero_sum_eval.utils.types import ActionConfig, Action
 from zero_sum_eval.core.player import Move, PlayerDefinition
-
+from zero_sum_eval.core import InvalidMoveError
 # Get the package version
 try:
     __version__ = importlib.metadata.version("zero_sum_eval")
 except importlib.metadata.PackageNotFoundError:
     __version__ = "unknown"
 
-class InvalidMoveError(Exception):
-    pass
 
 
 class GameState(ABC):

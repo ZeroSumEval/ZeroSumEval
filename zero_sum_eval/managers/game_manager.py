@@ -55,20 +55,18 @@ class GameManager:
             logger.info(f"\t\t--- {player.id} (attempt # {self.player_attempts[player]}) ---")
             logger.info(f"Game State:\n{game_state.display()}\n")
 
-            move = player.act(action)
-            
-            # Update the player's time usage
-            self.player_time_used[player] += move.time
-            
-            # Check if player has exceeded their time limit
-            if self.max_time_per_player is not None and self.player_time_used[player] > self.max_time_per_player:
-                logger.info(f"Player {player.id} has exceeded the maximum time limit of {self.max_time_per_player} seconds. Ending game.")
-                game_state.set_timeout_loss(player.id)
-                break
-                
-            logger.info(f"Move took {move.time:.2f} seconds. Total time used by {player.id}: {self.player_time_used[player]:.2f} seconds")
-            
             try:
+                move = player.act(action)
+                # Update the player's time usage
+                self.player_time_used[player] += move.time
+                
+                # Check if player has exceeded their time limit
+                if self.max_time_per_player is not None and self.player_time_used[player] > self.max_time_per_player:
+                    logger.info(f"Player {player.id} has exceeded the maximum time limit of {self.max_time_per_player} seconds. Ending game.")
+                    game_state.set_timeout_loss(player.id)
+                    break
+                    
+                logger.info(f"Move took {move.time:.2f} seconds. Total time used by {player.id}: {self.player_time_used[player]:.2f} seconds")
                 game_state.update_game(move)
                 retrying = False
                 logger.info(f"\nPlayer {player.id} made move:\n{move.value}\n\n")
