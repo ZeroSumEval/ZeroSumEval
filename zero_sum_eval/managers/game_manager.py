@@ -8,7 +8,7 @@ from typing import Dict, List
 
 import jsonlines
 
-from zero_sum_eval.core.game_state import GameState, InvalidMoveError
+from zero_sum_eval.core.game_state import GameState, InvalidMoveError, MoveParseError
 from zero_sum_eval.core.player import Player
 
 class GameManager:
@@ -70,9 +70,12 @@ class GameManager:
                 game_state.update_game(move)
                 retrying = False
                 logger.info(f"\nPlayer {player.id} made move:\n{move.value}\n\n")
-            except InvalidMoveError as e:
+            except (InvalidMoveError, MoveParseError) as e:
                 # If the move was invalid, log the error and increment the player's attempts
-                logger.error(f"Invalid move: {e}")
+                if isinstance(e, InvalidMoveError):
+                    logger.error(f"Invalid move: {e}")
+                else:
+                    logger.error(f"Move parse error: {e}")
                 self.player_attempts[player] += 1
                 retrying = True
                 if self.player_attempts[player] >= self.max_player_attempts:
