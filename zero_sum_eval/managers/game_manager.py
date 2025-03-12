@@ -8,7 +8,8 @@ from typing import Dict, List
 
 import jsonlines
 
-from zero_sum_eval.core.game_state import GameState, InvalidMoveError, MoveParseError
+from zero_sum_eval.core.game_state import GameState
+from zero_sum_eval.utils.types import InvalidMoveError, MoveParseError
 from zero_sum_eval.core.player import Player
 
 class GameManager:
