@@ -139,7 +139,7 @@ class Player(ABC):
                     trace = self.action_fn_dict[action.name](**action.inputs)
                 output = trace.items()[-1][1]
                 return Move(value=output, time=time.time() - start_time, trace=trace)
-            except ValueError as e:
+            except (ValueError, AttributeError) as e:
                 # TODO: remove this once dspy figures out better parsing
                 raise MoveParseError(f"Error producing move for action {action.name}: {e}") from e
         else:
