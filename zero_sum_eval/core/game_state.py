@@ -8,9 +8,8 @@ from copy import copy
 import time
 from typing import Dict, List
 
-from zero_sum_eval.utils.types import ActionConfig, Action
+from zero_sum_eval.utils.types import ActionConfig, Action, InvalidMoveError
 from zero_sum_eval.core.player import Move, PlayerDefinition
-from zero_sum_eval.core import InvalidMoveError
 # Get the package version
 try:
     __version__ = importlib.metadata.version("zero_sum_eval")
