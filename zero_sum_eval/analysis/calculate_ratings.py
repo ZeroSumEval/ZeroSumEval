@@ -107,7 +107,7 @@ def convert_matches_to_df(logs_path: str, max_player_attempts: int, max_time_per
         models = list(scores.keys())[:2]
 
         for model in models:
-            if scores[model]['attempts'] >= max_player_attempts or scores[model]['total_time'] >= max_time_per_player:
+            if scores[model]['attempts'] >= max_player_attempts or (max_time_per_player is not None and scores[model]['total_time'] >= max_time_per_player):
                 scores[model]['score'] = -math.inf
 
 
@@ -130,7 +130,7 @@ def convert_matches_to_df(logs_path: str, max_player_attempts: int, max_time_per
 
 
 def calculate_ratings(logs_path: str, bootstrap_rounds: int, max_player_attempts: int, max_time_per_player: int) -> pd.DataFrame:
-    match_df = convert_matches_to_df(logs_path, max_player_attempts, max_time_per_player)
+    match_df = convert_matches_to_df(logs_path=logs_path, max_player_attempts=max_player_attempts, max_time_per_player=max_time_per_player)
     np.random.seed(1)
     bootstrap_elo_lu = get_bootstrap_result(match_df, compute_mle_elo, bootstrap_rounds)
 
