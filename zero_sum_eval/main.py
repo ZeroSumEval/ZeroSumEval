@@ -51,7 +51,7 @@ This script supports three modes of operation:
     parser.add_argument("--game_kwargs", type=str, nargs="+", default="", help="Arguments to pass to the game constructor as a string. For example, 'rebuttal_rounds=2', 'topics=topics.txt' for the debate game.")
     parser.add_argument("--max_rounds", type=int, default=100, help="Maximum number of rounds to play.")
     parser.add_argument("--max_player_attempts", type=int, default=5, help="Maximum number of attempts to generate a valid player move.")
-    parser.add_argument("--max_time_per_player", type=int, default=None, help="Maximum number of seconds to generate a valid player move. (default: None, no time limit)")
+    parser.add_argument("--max_time_per_player", type=float, default=None, help="Maximum number of seconds to generate a valid player move. (default: None, no time limit)")
 
     # Pool mode arguments
     parser.add_argument("--pool", action="store_true", help="Run a pool of matches instead of a single game.")
