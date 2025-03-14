@@ -1,3 +1,5 @@
+# to run the pool
+# zseval -c ~/src/ZeroSumEval/experiments/rankings-3-9-25/mathquiz_reasoning.yaml --pool --calculate_ratings | tee mathquiz_reasoning_pool.log
 config_type: pool
 manager:
   max_matches: 100
