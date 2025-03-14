@@ -1,5 +1,5 @@
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from glob import glob
 import json
 from logging import getLogger
@@ -159,7 +159,7 @@ class GamePoolManager:
     def start(self):
         self.logger.info("Let the games begin!")
 
-        with ThreadPoolExecutor(max_workers=self.max_concurrent_matches) as executor:
+        with ProcessPoolExecutor(max_workers=self.max_concurrent_matches) as executor:
             future_to_match = {}
             for _ in range(self.max_matches):
                 lms = self.get_next_min_match()
