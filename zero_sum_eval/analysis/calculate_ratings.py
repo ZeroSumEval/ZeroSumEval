@@ -31,7 +31,11 @@ def summarize_results(matches_df: pd.DataFrame) -> None:
     for model, result in sorted(results.items(), key=strength, reverse=True):
         print(f"{model}: {result[0]}W / {result[1]}D / {result[2]}L")
     
-    
+
+def summarize_roles(matches_df: pd.DataFrame) -> None:
+    pass
+
+
 # Function from https://lmsys.org/blog/2023-12-07-leaderboard/
 def compute_mle_elo(
     df, SCALE=100, BASE=10, INIT_RATING=1000, sample_weight=None
@@ -102,6 +106,10 @@ def get_bootstrap_result(battles, func_compute_elo, num_round):
 
 
 def convert_matches_to_df(logs_path: str, max_player_attempts: int, max_time_per_player: Optional[float] = None) -> pd.DataFrame:
+
+    model_roles = defaultdict(lambda: defaultdict(int))
+    model_results = defaultdict(lambda: [0]*3)
+
     matches = []
     for match_results_path in glob(f'{logs_path}/**/matches/*/scores.json', recursive=True):
         with open(match_results_path) as f:
@@ -113,7 +121,8 @@ def convert_matches_to_df(logs_path: str, max_player_attempts: int, max_time_per
         for model in models:
             if scores[model]['attempts'] >= max_player_attempts or (max_time_per_player is not None and scores[model]['total_time'] >= max_time_per_player):
                 scores[model]['score'] = -math.inf
-
+            model_roles[model][scores[model]['role']] += 1
+            
         def winner(scores: dict, models: List[str]) -> str:
             advantage_a = scores[models[0]]['score'] - scores[models[1]]['score']
             if advantage_a > 0:
@@ -129,6 +138,16 @@ def convert_matches_to_df(logs_path: str, max_player_attempts: int, max_time_per
         ])
 
     matches_df = pd.DataFrame(matches, columns=['model_a', 'model_b', 'winner'])
+
+    print('Role Summary:')
+    for model, roles in sorted(model_roles.items()):
+        print(model)
+        print(', '.join(f'{k}: {v}' for k, v in sorted(roles.items())))
+    print('\n')
+
+    print('Result Summary:')
+    summarize_results(matches_df)
+    print('\n')
 
     return matches_df
 
