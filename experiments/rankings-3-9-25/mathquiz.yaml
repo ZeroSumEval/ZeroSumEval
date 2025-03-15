@@ -4,7 +4,7 @@ config_type: pool
 manager:
   max_matches: 100
   max_rounds_per_match: 100
-  max_player_attempts: 3
+  max_player_attempts: 5
   output_dir: rankings-3-9-25_mathquiz
 game:
   name: mathquiz
@@ -12,10 +12,10 @@ game:
     players:
       teacher:
         args:
-          max_tries: 5
+          max_tries: 1
       student:
         args:
-          max_tries: 5
+          max_tries: 1
 llms:
   - name: deepseek-chat
     model: openrouter/deepseek/deepseek-chat
