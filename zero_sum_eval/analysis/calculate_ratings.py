@@ -30,10 +30,6 @@ def summarize_results(matches_df: pd.DataFrame) -> None:
     strength = lambda res: (res[1][0] - res[1][2]) / len(res[1])
     for model, result in sorted(results.items(), key=strength, reverse=True):
         print(f"{model}: {result[0]}W / {result[1]}D / {result[2]}L")
-    
-
-def summarize_roles(matches_df: pd.DataFrame) -> None:
-    pass
 
 
 # Function from https://lmsys.org/blog/2023-12-07-leaderboard/
