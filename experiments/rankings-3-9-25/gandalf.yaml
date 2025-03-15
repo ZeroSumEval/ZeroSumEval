@@ -5,7 +5,7 @@ manager:
   max_matches: 1000
   max_rounds_per_match: 10
   max_player_attempts: 3
-  output_dir: rankings-3-9-25_gandalf_reasoning
+  output_dir: rankings-3-9-25_gandalf_reasoning_1000
 game:
   name: gandalf
   args:
