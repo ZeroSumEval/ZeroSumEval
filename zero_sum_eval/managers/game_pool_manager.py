@@ -168,13 +168,14 @@ class GamePoolManager:
         best_lms = [lm for lm, score in scores.items() if score == best_score]
 
         for lm, score in scores.items():
-            if score == best_score:
-                if len(best_lms) > 1:
-                    self.llm_wdl[lm]["draws"] += 1
+            if lm in self.llm_wdl:
+                if score == best_score:
+                    if len(best_lms) > 1:
+                        self.llm_wdl[lm]["draws"] += 1
+                    else:
+                        self.llm_wdl[lm]["wins"] += 1
                 else:
-                    self.llm_wdl[lm]["wins"] += 1
-            else:
-                self.llm_wdl[lm]["losses"] += 1
+                    self.llm_wdl[lm]["losses"] += 1
 
     def start(self):
         self.logger.info("Let the games begin!")
