@@ -51,8 +51,7 @@ class GamePoolManager:
         self.max_time_per_player = max_time_per_player
         self.output_dir = output_dir
         self.prev_matches_played = 0
-        self.llm_wdl = {llm_name: {"wins": 0, "draws": 0, "losses": 0} for llm_name in self.llm_configs}
-
+        
         # Ensure unique names for LMs
         seen = defaultdict(int)
         for llm in llm_configs:
@@ -62,6 +61,7 @@ class GamePoolManager:
             else:
                 seen[llm["name"]] = 1
         self.llm_configs = {llm["name"]: llm for llm in llm_configs}
+        self.llm_wdl = {llm_name: {"wins": 0, "draws": 0, "losses": 0} for llm_name in self.llm_configs}
 
         self.game = game
         self.game_args = game_args
