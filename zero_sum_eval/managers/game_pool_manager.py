@@ -14,7 +14,7 @@ from zero_sum_eval.core.registry import GAME_REGISTRY
 
 WDL_FILE = "wdl.json"
 SCORES_FILE = "scores.json"
-MATCH_DIR = "matches"
+MATCH_DIR = "matches/"
 
 class GamePoolManager:
 
