@@ -379,6 +379,8 @@ class PokerGame(GameState):
         """Export the game state."""
         return {
             'stage': self.stage,
+            'hole_cards': self.hole_cards,
+            'community_cards': self.community_cards,
             'pot': self.pot,
             'current_bet': self.current_bet,
             'chips': self.chips,
