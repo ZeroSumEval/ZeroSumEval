@@ -85,18 +85,18 @@ class ChessModule(dspy.Module):
         return out
 
 
-@PLAYER_REGISTRY.register("chess", "chess_player_predict")
-class ChessPlayerPredict(Player):
-    def init_actions(self):
-        return {
-            "MakeMove": ChessModule(module=dspy.Predict)
-        }
-
 @PLAYER_REGISTRY.register("chess", "chess_player")
 class ChessPlayer(Player):
-    def init_actions(self):
+    def init_actions(self, module: str = "ChainOfThought"):
+        supported_modules = {
+            "ChainOfThought": dspy.ChainOfThought,
+            "Predict": dspy.Predict,            
+        }
+        if module not in supported_modules:
+            raise ValueError(f"Module {module} not supported, supported modules are: {supported_modules.keys()}")
+
         return {
-            "MakeMove": ChessModule(module=dspy.ChainOfThought)
+            "MakeMove": ChessModule(module=supported_modules[module])
         }
     
 @PLAYER_REGISTRY.register("chess", "human_player")

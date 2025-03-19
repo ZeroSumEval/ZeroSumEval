@@ -76,18 +76,17 @@ class ClosingStatement(dspy.Module):
 
 @PLAYER_REGISTRY.register("debate", "debate_player")
 class DebatePlayer(Player):
-    def init_actions(self):
-        return {
-            "OpeningStatement": OpeningStatement(module=dspy.ChainOfThought),
-            "Rebuttal": Rebuttal(module=dspy.ChainOfThought),
-            "ClosingStatement": ClosingStatement(module=dspy.ChainOfThought)
+    def init_actions(self, module: str = "ChainOfThought"):
+        supported_modules = {
+            "ChainOfThought": dspy.ChainOfThought,
+            "Predict": dspy.Predict,
         }
 
-@PLAYER_REGISTRY.register("debate", "debate_player_predict")
-class DebatePlayerPredict(Player):
-    def init_actions(self):
+        if module not in supported_modules:
+            raise ValueError(f"Module {module} not supported, supported modules are: {supported_modules.keys()}")
+
         return {
-            "OpeningStatement": OpeningStatement(module=dspy.Predict),
-            "Rebuttal": Rebuttal(module=dspy.Predict),
-            "ClosingStatement": ClosingStatement(module=dspy.Predict)
+            "OpeningStatement": OpeningStatement(module=supported_modules[module]),
+            "Rebuttal": Rebuttal(module=supported_modules[module]),
+            "ClosingStatement": ClosingStatement(module=supported_modules[module])
         }

@@ -56,20 +56,22 @@ class InfiltratorGuessModule(dspy.Module):
 
 @PLAYER_REGISTRY.register("gandalf", "gandalf_sentinel")
 class SentinelPlayer(Player):
-    def init_actions(self):
-        return {"sentinel": SentinelResponseModule(module=dspy.ChainOfThought)}
+    def init_actions(self, module: str = "ChainOfThought"):
+        supported_modules = {
+            "ChainOfThought": dspy.ChainOfThought,
+            "Predict": dspy.Predict,
+        }
+        if module not in supported_modules:
+            raise ValueError(f"Module {module} not supported, supported modules are: {supported_modules.keys()}")
+        return {"sentinel": SentinelResponseModule(module=supported_modules[module])}
 
 @PLAYER_REGISTRY.register("gandalf", "gandalf_infiltrator")
 class InfiltratorPlayer(Player):
-    def init_actions(self):
-        return {"infiltrator": InfiltratorGuessModule(module=dspy.ChainOfThought)}
-
-@PLAYER_REGISTRY.register("gandalf", "gandalf_sentinel_predict")
-class SentinelPlayerPredict(Player):
-    def init_actions(self):
-        return {"sentinel": SentinelResponseModule(module=dspy.Predict)}
-
-@PLAYER_REGISTRY.register("gandalf", "gandalf_infiltrator_predict")
-class InfiltratorPlayerPredict(Player):
-    def init_actions(self):
-        return {"infiltrator": InfiltratorGuessModule(module=dspy.Predict)}
+    def init_actions(self, module: str = "ChainOfThought"):
+        supported_modules = {
+            "ChainOfThought": dspy.ChainOfThought,
+            "Predict": dspy.Predict,
+        }
+        if module not in supported_modules:
+            raise ValueError(f"Module {module} not supported, supported modules are: {supported_modules.keys()}")
+        return {"infiltrator": InfiltratorGuessModule(module=supported_modules[module])}

@@ -47,26 +47,24 @@ class AnswerQuestionModule(dspy.Module):
 
 @PLAYER_REGISTRY.register("mathquiz", "mathquiz_teacher")
 class MathQuizTeacher(Player):    
-    def init_actions(self):
-        return {
-            "GenerateQuestion": GenerateQuestionModule(module=dspy.ChainOfThought),
-            "AnswerQuestion": AnswerQuestionModule(module=dspy.ChainOfThought)
+    def init_actions(self, module: str = "ChainOfThought"):
+        supported_modules = {
+            "ChainOfThought": dspy.ChainOfThought,
+            "Predict": dspy.Predict,
         }
-
-@PLAYER_REGISTRY.register("mathquiz", "mathquiz_teacher_predict")
-class MathQuizTeacherPredict(Player):
-    def init_actions(self):
+        if module not in supported_modules:
+            raise ValueError(f"Module {module} not supported, supported modules are: {supported_modules.keys()}")
         return {
-            "GenerateQuestion": GenerateQuestionModule(module=dspy.Predict),
-            "AnswerQuestion": AnswerQuestionModule(module=dspy.Predict)
+            "GenerateQuestion": GenerateQuestionModule(module=supported_modules[module]),
+            "AnswerQuestion": AnswerQuestionModule(module=supported_modules[module])
         }
-
 @PLAYER_REGISTRY.register("mathquiz", "mathquiz_student")
 class MathQuizStudent(Player):
-    def init_actions(self):
-        return {"AnswerQuestion": AnswerQuestionModule(module=dspy.ChainOfThought)}
-
-@PLAYER_REGISTRY.register("mathquiz", "mathquiz_student_predict")
-class MathQuizStudentPredict(Player):
-    def init_actions(self):
-        return {"AnswerQuestion": AnswerQuestionModule(module=dspy.Predict)}
+    def init_actions(self, module: str = "ChainOfThought"):
+        supported_modules = {
+            "ChainOfThought": dspy.ChainOfThought,
+            "Predict": dspy.Predict,
+        }
+        if module not in supported_modules:
+            raise ValueError(f"Module {module} not supported, supported modules are: {supported_modules.keys()}")
+        return {"AnswerQuestion": AnswerQuestionModule(module=supported_modules[module])}

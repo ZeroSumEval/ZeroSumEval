@@ -61,14 +61,13 @@ class MakeBidModule(dspy.Module):
 
 @PLAYER_REGISTRY.register("liars_dice", "liars_dice_player")
 class LiarsDicePlayer(Player):
-    def init_actions(self):
-        return {
-            "MakeBid": MakeBidModule(module=dspy.ChainOfThought)
+    def init_actions(self, module: str = "ChainOfThought"):
+        supported_modules = {
+            "ChainOfThought": dspy.ChainOfThought,
+            "Predict": dspy.Predict,
         }
-
-@PLAYER_REGISTRY.register("liars_dice", "liars_dice_player_predict")
-class LiarsDicePlayerPredict(Player):
-    def init_actions(self):
+        if module not in supported_modules:
+            raise ValueError(f"Module {module} not supported, supported modules are: {supported_modules.keys()}")
         return {
-            "MakeBid": MakeBidModule(module=dspy.Predict)
+            "MakeBid": MakeBidModule(module=supported_modules[module])
         }

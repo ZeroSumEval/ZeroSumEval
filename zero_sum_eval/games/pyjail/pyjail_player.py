@@ -52,16 +52,14 @@ class SolvePyjailModule(dspy.Module):
 
 @PLAYER_REGISTRY.register("pyjail", "pyjail_player")
 class PyJailPlayer(Player):
-    def init_actions(self):
-        return {
-            "GeneratePyJail": GeneratePyjailModule(module=dspy.ChainOfThought),
-            "SolvePyJail": SolvePyjailModule(module=dspy.ChainOfThought)
+    def init_actions(self, module: str = "ChainOfThought"):
+        supported_modules = {
+            "ChainOfThought": dspy.ChainOfThought,
+            "Predict": dspy.Predict,
         }
-
-@PLAYER_REGISTRY.register("pyjail", "pyjail_player_predict")
-class PyJailPlayerPredict(Player):
-    def init_actions(self):
+        if module not in supported_modules:
+            raise ValueError(f"Module {module} not supported, supported modules are: {supported_modules.keys()}")
         return {
-            "GeneratePyJail": GeneratePyjailModule(module=dspy.Predict),
-            "SolvePyJail": SolvePyjailModule(module=dspy.Predict)
+            "GeneratePyJail": GeneratePyjailModule(module=supported_modules[module]),
+            "SolvePyJail": SolvePyjailModule(module=supported_modules[module])
         }
