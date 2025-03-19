@@ -53,21 +53,21 @@ class ClosingStatementSignature(dspy.Signature):
 
 
 class OpeningStatement(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         self.make_opening_statement = module(OpeningStatementSignature)
 
     def forward(self, topic, side):
         return self.make_opening_statement(topic=topic, side=side)
 
 class Rebuttal(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         self.make_rebuttal = module(RebuttalSignature)
 
     def forward(self, topic, history, side):
         return self.make_rebuttal(topic=topic, side=side, history=history)
 
 class ClosingStatement(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         self.make_closing_statement = module(ClosingStatementSignature)
 
     def forward(self, topic, history, side):

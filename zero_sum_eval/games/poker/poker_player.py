@@ -16,7 +16,7 @@ class MakeMoveSignature(dspy.Signature):
     amount: int = dspy.OutputField(desc='The amount to raise, if the action is "Raise"')
 
 class PokerMoveModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         super().__init__()
         self.make_move = module(MakeMoveSignature)
 

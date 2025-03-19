@@ -17,7 +17,7 @@ class SolveCode(dspy.Signature):
     code = dspy.OutputField(desc="Solution code to access FLAG start with ###START, end with ###END")
 
 class GeneratePyjailModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         super().__init__()
         self.cot_generate = module(GenerateCode)
 
@@ -35,7 +35,7 @@ class GeneratePyjailModule(dspy.Module):
         return cot_out
         
 class SolvePyjailModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         super().__init__()
         self.cot_solve = module(SolveCode)
 

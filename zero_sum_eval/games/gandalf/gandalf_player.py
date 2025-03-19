@@ -39,7 +39,7 @@ class InfiltratorResponse(dspy.Signature):
     response = dspy.OutputField(desc="response to the last message in the conversation")
 
 class SentinelResponseModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         super().__init__()
         self.sentinel_response = module(SentinelResponse)
 
@@ -47,7 +47,7 @@ class SentinelResponseModule(dspy.Module):
         return self.sentinel_response(conversation=conversation, secret_password=secret_password)
 
 class InfiltratorGuessModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         super().__init__()
         self.infiltrator_response = module(InfiltratorResponse)
 

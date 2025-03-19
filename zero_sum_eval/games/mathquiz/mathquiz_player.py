@@ -27,7 +27,7 @@ class AnswerQuestion(dspy.Signature):
     answer: int = dspy.OutputField(desc="answer to the math question (integer)")
 
 class GenerateQuestionModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         super().__init__()
         self.cot_question = module(GenerateQuestion)
 
@@ -36,7 +36,7 @@ class GenerateQuestionModule(dspy.Module):
         return cot_out
 
 class AnswerQuestionModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         super().__init__()
         self.cot_answer = module(AnswerQuestion)
 

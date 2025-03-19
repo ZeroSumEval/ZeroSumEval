@@ -58,7 +58,7 @@ class NextMove(dspy.Signature):
     move = dspy.OutputField(desc="a valid SAN move without move number, elipses, or any extra formatting.")
 
 class ChessModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         self.move = module(NextMove)
 
     def forward(self, board_state, role, history):

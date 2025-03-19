@@ -48,7 +48,7 @@ def validate_bid(example, prediction, trace=None):
         return 0
 
 class MakeBidModule(dspy.Module):
-    def __init__(self, module=dspy.ChainOfThought):
+    def __init__(self, module):
         super().__init__()
         self.make_bid = module(MakeBidSignature)
 
