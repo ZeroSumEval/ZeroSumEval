@@ -57,20 +57,20 @@ class NextMove(dspy.Signature):
     history = dspy.InputField(desc="move history")
     move = dspy.OutputField(desc="a valid SAN move without move number, elipses, or any extra formatting.")
 
-class ChessCoT(dspy.Module):
-    def __init__(self):
-        self.cot_move = dspy.ChainOfThought(NextMove)
+class ChessModule(dspy.Module):
+    def __init__(self, module=dspy.ChainOfThought):
+        self.move = module(NextMove)
 
     def forward(self, board_state, role, history):
-        cot_out = self.cot_move(
+        out = self.move(
             board_state=board_state,
             role=role,
             history=history
         )
-        cot_out.move = cot_out.move.replace(".", "")
+        out.move = out.move.replace(".", "")
         try:
             board = chess.Board(board_state)
-            board.parse_san(cot_out.move)
+            board.parse_san(out.move)
         except (IllegalMoveError, InvalidMoveError, AmbiguousMoveError) as e:
             error_messages = {
                 IllegalMoveError: "illegal",
@@ -80,16 +80,23 @@ class ChessCoT(dspy.Module):
             error_type = type(e)
             dspy.Suggest(
                 False,
-                f"{cot_out.move} is an {error_messages[error_type]} move, choose a different move."
+                f"{out.move} is an {error_messages[error_type]} move, choose a different move."
             )
-        return cot_out
+        return out
 
+
+@PLAYER_REGISTRY.register("chess", "chess_player_predict")
+class ChessPlayerPredict(Player):
+    def init_actions(self):
+        return {
+            "MakeMove": ChessModule(module=dspy.Predict)
+        }
 
 @PLAYER_REGISTRY.register("chess", "chess_player")
 class ChessPlayer(Player):
     def init_actions(self):
         return {
-            "MakeMove": ChessCoT()
+            "MakeMove": ChessModule(module=dspy.ChainOfThought)
         }
     
 @PLAYER_REGISTRY.register("chess", "human_player")

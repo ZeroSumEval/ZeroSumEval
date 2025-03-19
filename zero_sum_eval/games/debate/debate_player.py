@@ -53,22 +53,22 @@ class ClosingStatementSignature(dspy.Signature):
 
 
 class OpeningStatement(dspy.Module):
-    def __init__(self):
-        self.make_opening_statement = dspy.ChainOfThought(OpeningStatementSignature)
+    def __init__(self, module=dspy.ChainOfThought):
+        self.make_opening_statement = module(OpeningStatementSignature)
 
     def forward(self, topic, side):
         return self.make_opening_statement(topic=topic, side=side)
 
 class Rebuttal(dspy.Module):
-    def __init__(self):
-        self.make_rebuttal = dspy.ChainOfThought(RebuttalSignature)
+    def __init__(self, module=dspy.ChainOfThought):
+        self.make_rebuttal = module(RebuttalSignature)
 
     def forward(self, topic, history, side):
         return self.make_rebuttal(topic=topic, side=side, history=history)
 
 class ClosingStatement(dspy.Module):
-    def __init__(self):
-        self.make_closing_statement = dspy.ChainOfThought(ClosingStatementSignature)
+    def __init__(self, module=dspy.ChainOfThought):
+        self.make_closing_statement = module(ClosingStatementSignature)
 
     def forward(self, topic, history, side):
         return self.make_closing_statement(topic=topic, side=side, history=history)
@@ -78,7 +78,16 @@ class ClosingStatement(dspy.Module):
 class DebatePlayer(Player):
     def init_actions(self):
         return {
-            "OpeningStatement": OpeningStatement(),
-            "Rebuttal": Rebuttal(),
-            "ClosingStatement": ClosingStatement()
+            "OpeningStatement": OpeningStatement(module=dspy.ChainOfThought),
+            "Rebuttal": Rebuttal(module=dspy.ChainOfThought),
+            "ClosingStatement": ClosingStatement(module=dspy.ChainOfThought)
+        }
+
+@PLAYER_REGISTRY.register("debate", "debate_player_predict")
+class DebatePlayerPredict(Player):
+    def init_actions(self):
+        return {
+            "OpeningStatement": OpeningStatement(module=dspy.Predict),
+            "Rebuttal": Rebuttal(module=dspy.Predict),
+            "ClosingStatement": ClosingStatement(module=dspy.Predict)
         }

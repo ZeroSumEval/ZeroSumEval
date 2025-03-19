@@ -17,9 +17,9 @@ class MakeMoveSignature(dspy.Signature):
     amount: int = dspy.OutputField(desc='The amount to raise, if the action is "Raise"')
 
 class PokerMoveModule(dspy.Module):
-    def __init__(self):
+    def __init__(self, module=dspy.ChainOfThought):
         super().__init__()
-        self.make_move = dspy.ChainOfThought(MakeMoveSignature)
+        self.make_move = module(MakeMoveSignature)
 
     def forward(
         self,
@@ -69,5 +69,13 @@ class PokerPlayer(Player):
     def init_actions(self) -> Dict[str, dspy.Module]:
         """Initialize the action modules for the player"""
         return {
-            "MakeMove": PokerMoveModule()
+            "MakeMove": PokerMoveModule(module=dspy.ChainOfThought)
+        }
+
+@PLAYER_REGISTRY.register("poker", "poker_player_predict")
+class PokerPlayerPredict(Player):
+    def init_actions(self) -> Dict[str, dspy.Module]:
+        """Initialize the action modules for the player"""
+        return {
+            "MakeMove": PokerMoveModule(module=dspy.Predict)
         }

@@ -16,10 +16,10 @@ class SolveCode(dspy.Signature):
     history = dspy.InputField(desc="History of previous attempts and outputs")
     code = dspy.OutputField(desc="Solution code to access FLAG start with ###START, end with ###END")
 
-class GeneratePyjailCoT(dspy.Module):
-    def __init__(self):
+class GeneratePyjailModule(dspy.Module):
+    def __init__(self, module=dspy.ChainOfThought):
         super().__init__()
-        self.cot_generate = dspy.ChainOfThought(GenerateCode)
+        self.cot_generate = module(GenerateCode)
 
     def forward(self):
         cot_out = self.cot_generate()
@@ -34,10 +34,10 @@ class GeneratePyjailCoT(dspy.Module):
 
         return cot_out
         
-class SolvePyjailCoT(dspy.Module):
-    def __init__(self):
+class SolvePyjailModule(dspy.Module):
+    def __init__(self, module=dspy.ChainOfThought):
         super().__init__()
-        self.cot_solve = dspy.ChainOfThought(SolveCode)
+        self.cot_solve = module(SolveCode)
 
     def forward(self, pyjail_code, history):
         cot_out = self.cot_solve(pyjail_code=pyjail_code, history=history)
@@ -54,6 +54,14 @@ class SolvePyjailCoT(dspy.Module):
 class PyJailPlayer(Player):
     def init_actions(self):
         return {
-            "GeneratePyJail": GeneratePyjailCoT(),
-            "SolvePyJail": SolvePyjailCoT()
+            "GeneratePyJail": GeneratePyjailModule(module=dspy.ChainOfThought),
+            "SolvePyJail": SolvePyjailModule(module=dspy.ChainOfThought)
+        }
+
+@PLAYER_REGISTRY.register("pyjail", "pyjail_player_predict")
+class PyJailPlayerPredict(Player):
+    def init_actions(self):
+        return {
+            "GeneratePyJail": GeneratePyjailModule(module=dspy.Predict),
+            "SolvePyJail": SolvePyjailModule(module=dspy.Predict)
         }

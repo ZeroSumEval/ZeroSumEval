@@ -26,19 +26,19 @@ class AnswerQuestion(dspy.Signature):
     question: str = dspy.InputField(desc="math question")
     answer: int = dspy.OutputField(desc="answer to the math question (integer)")
 
-class GenerateQuestionCoT(dspy.Module):
-    def __init__(self):
+class GenerateQuestionModule(dspy.Module):
+    def __init__(self, module=dspy.ChainOfThought):
         super().__init__()
-        self.cot_question = dspy.ChainOfThought(GenerateQuestion)
+        self.cot_question = module(GenerateQuestion)
 
     def forward(self, target):
         cot_out = self.cot_question(target=target)
         return cot_out
 
-class AnswerQuestionCoT(dspy.Module):
-    def __init__(self):
+class AnswerQuestionModule(dspy.Module):
+    def __init__(self, module=dspy.ChainOfThought):
         super().__init__()
-        self.cot_answer = dspy.ChainOfThought(AnswerQuestion)
+        self.cot_answer = module(AnswerQuestion)
 
     def forward(self, question):
         cot_out = self.cot_answer(question=question)
@@ -49,12 +49,24 @@ class AnswerQuestionCoT(dspy.Module):
 class MathQuizTeacher(Player):    
     def init_actions(self):
         return {
-            "GenerateQuestion": GenerateQuestionCoT(),
-            "AnswerQuestion": AnswerQuestionCoT()
+            "GenerateQuestion": GenerateQuestionModule(module=dspy.ChainOfThought),
+            "AnswerQuestion": AnswerQuestionModule(module=dspy.ChainOfThought)
         }
 
+@PLAYER_REGISTRY.register("mathquiz", "mathquiz_teacher_predict")
+class MathQuizTeacherPredict(Player):
+    def init_actions(self):
+        return {
+            "GenerateQuestion": GenerateQuestionModule(module=dspy.Predict),
+            "AnswerQuestion": AnswerQuestionModule(module=dspy.Predict)
+        }
 
 @PLAYER_REGISTRY.register("mathquiz", "mathquiz_student")
 class MathQuizStudent(Player):
     def init_actions(self):
-        return {"AnswerQuestion": AnswerQuestionCoT()}
+        return {"AnswerQuestion": AnswerQuestionModule(module=dspy.ChainOfThought)}
+
+@PLAYER_REGISTRY.register("mathquiz", "mathquiz_student_predict")
+class MathQuizStudentPredict(Player):
+    def init_actions(self):
+        return {"AnswerQuestion": AnswerQuestionModule(module=dspy.Predict)}

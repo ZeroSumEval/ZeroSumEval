@@ -48,9 +48,9 @@ def validate_bid(example, prediction, trace=None):
         return 0
 
 class MakeBidModule(dspy.Module):
-    def __init__(self):
+    def __init__(self, module=dspy.ChainOfThought):
         super().__init__()
-        self.make_bid = dspy.ChainOfThought(MakeBidSignature)
+        self.make_bid = module(MakeBidSignature)
 
     def forward(self, dice_roll, current_bid, history):
         return self.make_bid(
@@ -63,5 +63,12 @@ class MakeBidModule(dspy.Module):
 class LiarsDicePlayer(Player):
     def init_actions(self):
         return {
-            "MakeBid": MakeBidModule()
+            "MakeBid": MakeBidModule(module=dspy.ChainOfThought)
+        }
+
+@PLAYER_REGISTRY.register("liars_dice", "liars_dice_player_predict")
+class LiarsDicePlayerPredict(Player):
+    def init_actions(self):
+        return {
+            "MakeBid": MakeBidModule(module=dspy.Predict)
         }
