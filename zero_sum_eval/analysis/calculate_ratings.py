@@ -53,21 +53,17 @@ def summarize_results(matches_df: pd.DataFrame) -> None:
 
     total_cols = results_df.filter(like=f'all~').columns
     results_df[f'all~total'] = results_df[total_cols].sum(axis=1)
-    
-    # Sort by performance
-    # results_df['score'] = (results_df['all~wins'] - results_df['all~loses']) / results_df['all~total']
-    # results_df.sort_values('score', ascending=False, inplace=True)
-    # results_df.drop('score', axis=1, inplace=True)
-    # results_df.columns = pd.MultiIndex.from_tuples(tuple(col.split('~')) for col in results_df.columns)
 
     return results_df
-    print(results_df)
 
 
-# Function from https://lmsys.org/blog/2023-12-07-leaderboard/
 def compute_mle_elo(
     df, SCALE=400, BASE=10, INIT_RATING=1000, sample_weight=None
 ):
+    """
+    Computes Bradley-Terry rating score. Heavily inspired by:
+    https://lmsys.org/blog/2023-12-07-leaderboard/
+    """
     
     models = set(df['model_a']) | set(df['model_b'])
     models = list(sorted(models))
@@ -118,8 +114,8 @@ def compute_mle_elo(
     return pd.Series(elo_scores, index=models.index).sort_values(ascending=False)
 
 
-# Function from https://lmsys.org/blog/2023-12-07-leaderboard/
 def get_bootstrap_result(battles, func_compute_elo, num_round):
+    """From https://lmsys.org/blog/2023-12-07-leaderboard/"""
     rows = []
     for _ in tqdm(range(num_round), desc="bootstrap"):
         try:
