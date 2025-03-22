@@ -18,7 +18,7 @@ def summarize_results(matches_df: pd.DataFrame) -> None:
     """Prints various summary metrics of the matches with per-model and per-role results."""
 
     # Initialize summary table
-    if 'tie' in matches_df['winner']:
+    if 'tie' in set(matches_df['winner']):
         outcomes = ['wins', 'draws', 'loses', 'total']
     else:
         outcomes = ['wins', 'loses', 'total']
