@@ -1,3 +1,5 @@
+# Usage
+# zseval -c ~/src/ZeroSumEval/experiments/rankings-3-9-25/chess_predict.yaml --pool --calculate_ratings
 config_type: pool
 manager:
   max_matches: 200
