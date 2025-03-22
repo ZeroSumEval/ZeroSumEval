@@ -51,9 +51,6 @@ def summarize_results(matches_df: pd.DataFrame) -> None:
         outcome_cols = results_df.filter(like=f'~{outcome}').columns
         results_df[f'all~{outcome}'] = results_df[outcome_cols].sum(axis=1)
 
-    total_cols = results_df.filter(like=f'all~').columns
-    results_df[f'all~total'] = results_df[total_cols].sum(axis=1)
-
     return results_df
 
 
