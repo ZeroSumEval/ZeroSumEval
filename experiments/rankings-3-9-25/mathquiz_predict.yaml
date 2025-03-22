@@ -2,7 +2,7 @@
 # zseval -c ~/src/ZeroSumEval/experiments/rankings-3-9-25/mathquiz_predict.yaml --pool --calculate_ratings
 config_type: pool
 manager:
-  max_matches: 400
+  max_matches: 800
   max_rounds_per_match: 100
   max_player_attempts: 3
   output_dir: rankings-3-9-25_mathquiz_predict_vs_cot
