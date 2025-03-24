@@ -72,8 +72,8 @@ def compute_mle_elo(
         elif row.winner == 'model_b':
             ptbl_win.loc[row.model_b, row.model_a] += 1 * role_weights[row.role_b]
         else:
-            ptbl_win.loc[row.model_a, row.model_b] += 1
-            ptbl_win.loc[row.model_b, row.model_a] += 1
+            ptbl_win.loc[row.model_a, row.model_b] += 0.5
+            ptbl_win.loc[row.model_b, row.model_a] += 0.5
 
     models = pd.Series(np.arange(len(ptbl_win.index)), index=ptbl_win.index)
 
