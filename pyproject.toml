@@ -33,6 +33,7 @@ dependencies = [
 
     # Analysis dependencies
     "scikit-learn>=1.0.0",
+    "matplotlib>=3.8.9",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
