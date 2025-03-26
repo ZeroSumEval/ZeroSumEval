@@ -9,19 +9,27 @@ from zero_sum_eval.analysis.calculate_ratings import calculate_ratings
 # Set the style to a more modern look
 plt.style.use('seaborn-v0_8-whitegrid')
 
-# Custom color palette - more visually appealing
+# Custom color palette - using different shades of blue
 CUSTOM_COLORS = [
-    "#4C72B0",  # blue
-    "#55A868",  # green
-    "#C44E52",  # red
-    "#8172B3",  # purple
-    "#CCB974",  # yellow
-    "#64B5CD",  # light blue
-    "#4C72B0",  # blue (repeat with lower alpha for more games)
-    "#55A868",  # green
-    "#C44E52",  # red
-    "#8172B3",  # purple
+    (14/255, 140/255, 247/255),   # Bright blue
+    (41/255, 44/255, 147/255),    # Deep blue
+    (0/255, 84/255, 159/255),     # Navy blue
+    (86/255, 180/255, 233/255),   # Sky blue
+    (120/255, 180/255, 210/255),  # Darker light blue for mathquiz
+    (0/255, 119/255, 182/255),    # Medium blue
+    (65/255, 105/255, 225/255)    # Royal blue
 ]
+
+# Create a mapping between games and their colors for consistency
+GAME_COLOR_MAPPING = {
+    "chess": CUSTOM_COLORS[0],
+    "debate": CUSTOM_COLORS[1],
+    "gandalf": CUSTOM_COLORS[2],
+    "liars_dice": CUSTOM_COLORS[3],
+    "mathquiz": CUSTOM_COLORS[4],
+    "poker": CUSTOM_COLORS[5],
+    "pyjail": CUSTOM_COLORS[6]
+}
 
 # Font settings for a more professional look
 plt.rcParams.update({
@@ -84,7 +92,7 @@ def get_logo(logo_path, size=0.15):
 # Map model names to their logo files
 LOGO_DIR = "paper/logos"
 LOGO_MAPPING = {
-    "gpt-4o": os.path.join(LOGO_DIR, "gpt-4.png"),
+    "gpt-4o": os.path.join(LOGO_DIR, "openai.png"),
     "claude-3.7-sonnet": os.path.join(LOGO_DIR, "claude.png"),
     "claude-3.7-sonnet-thinking": os.path.join(LOGO_DIR, "claude.png"),
     "gemini-2.0-flash": os.path.join(LOGO_DIR, "gemini.png"),
@@ -165,8 +173,8 @@ index = np.arange(len(sorted_players))
 fig, ax = plt.subplots(figsize=(18, 10), dpi=300)
 
 # Set background color
-fig.patch.set_facecolor('#F8F8F8')
-ax.set_facecolor('#F8F8F8')
+fig.patch.set_facecolor('white')
+ax.set_facecolor('white')
 
 # Initialize arrays for the bottom of the bars and cumulative errors
 cumulative_ratings = np.zeros(len(sorted_players))
@@ -189,17 +197,58 @@ for i, (game, ratings) in enumerate(game_ratings.items()):
         lower_bounds.append(max(0, predicted - lower))  # Ensure non-negative error
         upper_bounds.append(max(0, upper - predicted))  # Ensure non-negative error
     
-    # Plot the bars with a slight gap between them
-    ax.bar(index, game_ratings_values, width=0.8, label=game.capitalize(), 
-           color=CUSTOM_COLORS[i % len(CUSTOM_COLORS)], bottom=cumulative_ratings, 
+    # Plot the bars with a slight gap between them - use specific color for each game
+    game_color = GAME_COLOR_MAPPING.get(game, CUSTOM_COLORS[i % len(CUSTOM_COLORS)])
+    bars = ax.bar(index, game_ratings_values, width=0.8, label=game.capitalize(), 
+           color=game_color, bottom=cumulative_ratings, 
            edgecolor='white', linewidth=0.5)
+    
+    # Add error bars for this game segment
+    ax.errorbar(
+        index, 
+        cumulative_ratings + np.array(game_ratings_values), 
+        yerr=[lower_bounds, upper_bounds],
+        fmt='none',  # No connecting line
+        ecolor='black',
+        elinewidth=1.2,
+        capsize=4,
+        capthick=1.5,
+        alpha=0.7,
+        zorder=10  # Ensure error bars are drawn on top
+    )
+    
+    # Add the individual game rating values in the middle of each bar segment
+    for j, bar in enumerate(bars):
+        if game_ratings_values[j] > 0.5:  # Only add text if the bar segment is tall enough
+            # Calculate the middle position of this bar segment
+            bar_height = game_ratings_values[j]
+            y_pos = cumulative_ratings[j] + (bar_height / 2)
+            
+            # Add the game name only for the first and last bars
+            if j == 0:
+                ax.annotate(f'{game.capitalize()}', 
+                            xy=(j, y_pos),
+                            xytext=(0, 5),  # Position above the rating
+                            textcoords='offset points',
+                            ha='center', va='bottom',
+                            fontsize=12, fontweight='bold',
+                            color='white')
+            
+            # Add the rating value for all bars
+            ax.annotate(f'{game_ratings_values[j]:.1f}', 
+                        xy=(j, y_pos),
+                        xytext=(0, -10),  # Position below the game name
+                        textcoords='offset points',
+                        ha='center', va='center',
+                        fontsize=12, fontweight='bold',
+                        color='white')
     
     # Update cumulative values for the next game
     cumulative_ratings += np.array(game_ratings_values)
     cumulative_lower_errors += np.array(lower_bounds)
     cumulative_upper_errors += np.array(upper_bounds)
 
-# Add logos on top of each bar
+# Add logos on top of each bar and total values
 for i, player in enumerate(sorted_players):
     if player in LOGO_MAPPING:
         logo_path = LOGO_MAPPING[player]
@@ -209,12 +258,13 @@ for i, player in enumerate(sorted_players):
             ab = AnnotationBbox(
                 logo_image, 
                 (i, cumulative_ratings[i]), 
-                xybox=(0, 30),  # Offset above the bar
+                xybox=(0, 40),  # Offset above the bar
                 xycoords='data',
                 boxcoords="offset points",
                 frameon=False
             )
             ax.add_artist(ab)
+    
 
 # Add a horizontal line at y=0
 ax.axhline(y=0, color='#333333', linestyle='-', linewidth=1, alpha=0.3)
@@ -224,9 +274,9 @@ ax.grid(axis='y', linestyle='--', alpha=0.3, color='#333333')
 ax.set_axisbelow(True)  # Put grid behind bars
 
 # Set title and labels with enhanced typography
-ax.set_title('Model Performance Across All Games', fontsize=20, fontweight='bold', pad=20)
-ax.set_xlabel('Model', fontsize=16, labelpad=15)
-ax.set_ylabel('Cumulative Rating', fontsize=16, labelpad=15)
+ax.set_title('Cumulative Ratings', fontsize=20, fontweight='bold', pad=20)
+# ax.set_xlabel('Model', fontsize=16, labelpad=15)
+ax.set_ylabel('Rating', fontsize=16, labelpad=15)
 
 # Format x-axis labels
 plt.xticks(index, [p.replace('-', '\n') for p in sorted_players], rotation=0, ha='center', fontsize=12)
@@ -240,23 +290,6 @@ for spine in ax.spines.values():
     spine.set_visible(True)
     spine.set_color('#DDDDDD')
     spine.set_linewidth(0.5)
-
-# Create a more attractive legend
-legend = ax.legend(title='Game', fontsize=12, title_fontsize=14, 
-                  loc='upper center', bbox_to_anchor=(0.5, -0.15), 
-                  ncol=num_games, frameon=True, fancybox=True, shadow=True)
-legend.get_frame().set_facecolor('#F8F8F8')
-legend.get_frame().set_edgecolor('#DDDDDD')
-
-# # Add annotations for the top 3 models
-# for i in range(min(3, len(sorted_players))):
-#     ax.annotate(f'#{i+1}', xy=(i, cumulative_ratings[i]), 
-#                 xytext=(0, 10), textcoords='offset points',
-#                 ha='center', va='bottom', fontsize=14, fontweight='bold',
-#                 bbox=dict(boxstyle="round,pad=0.3", fc='white', ec="gray", alpha=0.8))
-
-# Add a subtle watermark
-fig.text(0.99, 0.01, 'ZeroSumEval', fontsize=10, color='gray', ha='right', va='bottom', alpha=0.5)
 
 # Adjust layout
 plt.tight_layout()
