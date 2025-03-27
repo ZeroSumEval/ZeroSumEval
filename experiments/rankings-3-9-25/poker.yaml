@@ -43,6 +43,7 @@ llms:
     model: openrouter/openai/o3-mini-high
     args:
       cache: false
+      max_tokens: 4000
     action_args:
       module: Predict
 
