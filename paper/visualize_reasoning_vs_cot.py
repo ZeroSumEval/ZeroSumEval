@@ -144,7 +144,7 @@ ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My
 ALL_DIRS = {
     "chess": "rankings-3-9-25_chess",
     "gandalf": "rankings-3-9-25_gandalf_final_500",
-    "liars_dice": "rankings-3-9-25_liars_dice",
+    "liars_dice": "rankings-3-9-25_liars_dice_reasoning_1000",
     "mathquiz": "rankings-3-9-25_mathquiz_final_500",
     "poker": "rankings-3-9-25_poker_final_500",
 }
