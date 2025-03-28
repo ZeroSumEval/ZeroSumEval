@@ -99,6 +99,7 @@ LOGO_MAPPING = {
     "llama-3.3-70b": os.path.join(LOGO_DIR, "llama.png"),
     "llama-3.1-405b": os.path.join(LOGO_DIR, "llama.png"),
     "llama-3.1-70b": os.path.join(LOGO_DIR, "llama.png"),
+    "llama-3.1-8b": os.path.join(LOGO_DIR, "llama.png"),
     "deepseek-chat": os.path.join(LOGO_DIR, "deepseek.png"),
     "deepseek-r1": os.path.join(LOGO_DIR, "deepseek.png"),
     "qwen2.5-32b": os.path.join(LOGO_DIR, "qwen2.png"),

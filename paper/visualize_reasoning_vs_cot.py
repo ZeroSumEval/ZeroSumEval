@@ -133,6 +133,7 @@ LOGO_MAPPING = {
     "llama-3.3-70b": os.path.join(LOGO_DIR, "llama.png"),
     "llama-3.1-405b": os.path.join(LOGO_DIR, "llama.png"),
     "llama-3.1-70b": os.path.join(LOGO_DIR, "llama.png"),
+    "llama-3.1-8b": os.path.join(LOGO_DIR, "llama.png"),
     "deepseek-chat": os.path.join(LOGO_DIR, "deepseek.png"),
     "deepseek-r1": os.path.join(LOGO_DIR, "deepseek.png"),
     "qwen2.5-32b": os.path.join(LOGO_DIR, "qwen2.png"),
@@ -347,8 +348,8 @@ def create_grouped_lollipop_chart():
     # Add padding to x-axis limits and extend right side for logos
     x_padding = (max(all_differences) - min(all_differences)) * 0.15
     # Extend right side more to make room for logos
-    ax.set_xlim(min(all_differences) - x_padding, max(all_differences) * 1.4)
-    
+    # ax.set_xlim(min(all_differences) - x_padding, abs(max(all_differences)) * 1.4)
+    ax.set_xlim(-1100, 1100)
     # Add annotations for interpretation - using blue shades instead of green/red
     positive_color = CUSTOM_COLORS[0]  # Bright blue for positive differences
     negative_color = CUSTOM_COLORS[2]  # Navy blue for negative differences
