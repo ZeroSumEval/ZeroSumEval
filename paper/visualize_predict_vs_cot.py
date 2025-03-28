@@ -140,7 +140,7 @@ LOGO_MAPPING = {
     "o3-mini-high": os.path.join(LOGO_DIR, "openai.png")
 }
 
-ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My Drive/Zero Sum Eval/rankings-3-9-25/"
+ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My Drive/Zero Sum Eval/rankings-3-9-25-final-final/"
 ALL_DIRS = {
     "chess": "rankings-3-9-25_chess_predict_vs_cot",
     "mathquiz": "rankings-3-9-25_mathquiz_predict_vs_cot",
@@ -361,7 +361,6 @@ def create_lollipop_chart():
     
     # Save the figure
     plt.savefig('paper/figures/cot_vs_predict_lollipop.pdf', dpi=300, bbox_inches='tight')
-    plt.savefig('paper/figures/cot_vs_predict_lollipop.png', dpi=300, bbox_inches='tight')
 
 # Call the function to create the improved lollipop chart
 create_lollipop_chart()

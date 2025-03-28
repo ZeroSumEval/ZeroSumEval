@@ -135,7 +135,7 @@ LOGO_MAPPING = {
     "llama-3.3-70b-cot": os.path.join(LOGO_DIR, "llama.png"),
 }
 
-ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My Drive/Zero Sum Eval/rankings-3-9-25/"
+ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My Drive/Zero Sum Eval/rankings-3-9-25-final-final/"
 ALL_DIRS = {
     "chess": "rankings-3-9-25_chess",
     "debate": "rankings-3-9-25_debate",
@@ -205,81 +205,6 @@ for game, dir in ALL_DIRS.items():
 
 # Remove duplicates while preserving order
 all_models = list(dict.fromkeys(all_models))
-
-# Function to create a radar chart comparing Llama models across games
-def create_radar_chart():
-    # Get all games and models
-    games = list(game_ratings.keys())
-    models = [model for model in LLAMA_MODELS if model in all_models]
-    
-    # Number of variables
-    N = len(games)
-    
-    # What will be the angle of each axis in the plot
-    angles = [n / float(N) * 2 * np.pi for n in range(N)]
-    angles += angles[:1]  # Close the loop
-    
-    # Create figure
-    fig, ax = plt.subplots(figsize=(12, 10), subplot_kw=dict(polar=True), dpi=300)
-    
-    # Set background color
-    fig.patch.set_facecolor('#FFFFFF')
-    ax.set_facecolor('#FFFFFF')
-    
-    # Draw one axis per variable and add labels
-    plt.xticks(angles[:-1], [game.capitalize() for game in games], fontsize=14, fontweight='bold')
-    
-    # Draw ylabels (rating values)
-    ax.set_rlabel_position(0)
-    
-    # Find max rating across all games and models for scaling
-    max_rating = 0
-    for game in games:
-        for model in models:
-            if model in game_ratings[game].index:
-                rating = game_ratings[game]['rating']['predicted'].get(model, 0)
-                max_rating = max(max_rating, rating)
-    
-    # Add some padding to the max rating
-    max_rating = max_rating * 1.1
-    plt.ylim(0, max_rating)
-    
-    # Plot each model
-    for i, model in enumerate(models):
-        # Get ratings for this model across all games
-        model_ratings = []
-        for game in games:
-            if model in game_ratings[game].index:
-                rating = game_ratings[game]['rating']['predicted'].get(model, 0)
-            else:
-                rating = 0
-            model_ratings.append(rating)
-        
-        # Close the loop
-        model_ratings += model_ratings[:1]
-        
-        # Get color for this model - use a distinct color from the palette
-        color = CUSTOM_COLORS[i % len(CUSTOM_COLORS)]
-        
-        # Plot the ratings
-        ax.plot(angles, model_ratings, linewidth=3, linestyle='solid', color=color, alpha=0.8, label=model)
-        ax.fill(angles, model_ratings, color=color, alpha=0.1)
-    
-    # Add legend with model logos
-    legend = ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1), frameon=True, 
-                      fontsize=12, title="Llama Models", title_fontsize=14)
-    
-    # Set title
-    plt.title('Llama Model Performance Across Games', fontsize=20, fontweight='bold', pad=20)
-    
-    # Add a subtle watermark
-    fig.text(0.98, 0.02, 'ZeroSumEval', fontsize=8, color='gray', 
-            ha='right', va='bottom', alpha=0.5, style='italic')
-    
-    # Save the figure
-    plt.tight_layout()
-    plt.savefig('paper/figures/llama_radar_comparison.pdf', dpi=300, bbox_inches='tight')
-    plt.savefig('paper/figures/llama_radar_comparison.png', dpi=300, bbox_inches='tight')
 
 # Function to create a grouped bar chart comparing Llama models across games
 def create_grouped_bar_chart():
@@ -379,64 +304,6 @@ def create_grouped_bar_chart():
     # Save the figure
     plt.tight_layout()
     plt.savefig('paper/figures/llama_bar_comparison.pdf', dpi=300, bbox_inches='tight')
-    plt.savefig('paper/figures/llama_bar_comparison.png', dpi=300, bbox_inches='tight')
-
-# Function to create a heatmap comparing Llama models across games
-def create_heatmap():
-    # Get all games and models
-    games = list(game_ratings.keys())
-    models = [model for model in LLAMA_MODELS + LLAMA_COT_MODELS if model in all_models]
-    
-    # Create a matrix of ratings
-    ratings_matrix = np.zeros((len(models), len(games)))
-    
-    # Fill the matrix with ratings
-    for i, model in enumerate(models):
-        for j, game in enumerate(games):
-            if model in game_ratings[game].index:
-                ratings_matrix[i, j] = game_ratings[game]['rating']['predicted'].get(model, 0)
-    
-    # Create figure
-    fig, ax = plt.subplots(figsize=(12, 8), dpi=300)
-    
-    # Set background color
-    fig.patch.set_facecolor('#FFFFFF')
-    ax.set_facecolor('#FFFFFF')
-    
-    # Create the heatmap
-    im = ax.imshow(ratings_matrix, cmap='Blues')
-    
-    # Add colorbar
-    cbar = ax.figure.colorbar(im, ax=ax)
-    cbar.ax.set_ylabel('Rating', rotation=-90, va="bottom", fontsize=12)
-    
-    # Set ticks and labels
-    ax.set_xticks(np.arange(len(games)))
-    ax.set_yticks(np.arange(len(models)))
-    ax.set_xticklabels([game.capitalize() for game in games], fontsize=12)
-    ax.set_yticklabels(models, fontsize=12)
-    
-    # Rotate the x-axis labels
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-    
-    # Add text annotations in each cell
-    for i in range(len(models)):
-        for j in range(len(games)):
-            text = ax.text(j, i, f"{ratings_matrix[i, j]:.1f}",
-                          ha="center", va="center", color="white" if ratings_matrix[i, j] > np.max(ratings_matrix)/2 else "black",
-                          fontsize=10, fontweight='bold')
-    
-    # Set title
-    ax.set_title('Llama Model Performance Heatmap', fontsize=16, fontweight='bold', pad=20)
-    
-    # Add a subtle watermark
-    fig.text(0.98, 0.02, 'ZeroSumEval', fontsize=8, color='gray', 
-            ha='right', va='bottom', alpha=0.5, style='italic')
-    
-    # Save the figure
-    plt.tight_layout()
-    plt.savefig('paper/figures/llama_heatmap_comparison.pdf', dpi=300, bbox_inches='tight')
-    plt.savefig('paper/figures/llama_heatmap_comparison.png', dpi=300, bbox_inches='tight')
 
 # Function to create a comparison between base models and their CoT variants
 def create_cot_comparison():
@@ -614,10 +481,7 @@ def create_cot_comparison():
     
     # Save the figure
     plt.savefig('paper/figures/llama_cot_comparison.pdf', dpi=300, bbox_inches='tight')
-    plt.savefig('paper/figures/llama_cot_comparison.png', dpi=300, bbox_inches='tight')
 
 # Call the visualization functions
-create_radar_chart()
 create_grouped_bar_chart()
-create_heatmap()
 create_cot_comparison()

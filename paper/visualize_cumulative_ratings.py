@@ -107,7 +107,7 @@ LOGO_MAPPING = {
     "o3-mini-high": os.path.join(LOGO_DIR, "openai.png")
 }
 
-ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My Drive/Zero Sum Eval/rankings-3-9-25/"
+ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My Drive/Zero Sum Eval/rankings-3-9-25-final-final/"
 ALL_DIRS = {
     "chess": "rankings-3-9-25_chess",
     "debate": "rankings-3-9-25_debate",
@@ -296,6 +296,5 @@ for spine in ax.spines.values():
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.2)  # Make room for the legend
 
-# Save the figure with high resolution
+# Save the figure with high resolution (PDF only)
 plt.savefig('paper/figures/model_performance_comparison.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('paper/figures/model_performance_comparison.png', dpi=300, bbox_inches='tight')

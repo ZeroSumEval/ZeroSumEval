@@ -141,7 +141,7 @@ LOGO_MAPPING = {
     "o3-mini-high": os.path.join(LOGO_DIR, "openai.png")
 }
 
-ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My Drive/Zero Sum Eval/rankings-3-9-25/"
+ROOT_DIR = "/Users/haidark/Library/CloudStorage/GoogleDrive-haidark@gmail.com/My Drive/Zero Sum Eval/rankings-3-9-25-final-final/"
 ALL_DIRS = {
     "chess": "rankings-3-9-25_chess",
     "gandalf": "rankings-3-9-25_gandalf_final_500",
@@ -379,7 +379,6 @@ def create_grouped_lollipop_chart():
     
     # Update the file paths for saving the figures
     plt.savefig('paper/figures/reasoning_vs_cot_grouped.pdf', dpi=300, bbox_inches='tight')
-    plt.savefig('paper/figures/reasoning_vs_cot_grouped.png', dpi=300, bbox_inches='tight')
 
 # Call the function to create the grouped lollipop chart
 create_grouped_lollipop_chart()
