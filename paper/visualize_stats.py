@@ -3,82 +3,29 @@ import numpy as np
 import os
 from collections import defaultdict
 from get_stats import get_all_stats
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
-from PIL import Image
-import matplotlib.patches as mpatches
+from matplotlib.offsetbox import AnnotationBbox
+from utils import ROOT_DIR, CUSTOM_COLORS, LOGO_MAPPING, get_logo
 
 # Set the style to a more modern look
 plt.style.use('seaborn-v0_8-whitegrid')
-
-# Custom color palette - using different shades of blue
-CUSTOM_COLORS = [
-    (14/255, 140/255, 247/255),   # Bright blue
-    (41/255, 44/255, 147/255),    # Deep blue
-    (0/255, 84/255, 159/255),     # Navy blue
-    (86/255, 180/255, 233/255),   # Sky blue
-    (120/255, 180/255, 210/255),  # Darker light blue for mathquiz
-    (0/255, 119/255, 182/255),    # Medium blue
-    (65/255, 105/255, 225/255)    # Royal blue
-]
 
 # Font settings for a more professional look
 plt.rcParams.update({
     'font.family': 'sans-serif',
     'font.sans-serif': ['Arial', 'DejaVu Sans', 'Liberation Sans', 'Bitstream Vera Sans', 'sans-serif'],
-    'axes.labelsize': 14,
-    'axes.titlesize': 16,
-    'xtick.labelsize': 12,
-    'ytick.labelsize': 12,
-    'legend.fontsize': 12,
-    'legend.title_fontsize': 14
+    'axes.labelsize': 16,
+    'axes.titlesize': 18,
+    'xtick.labelsize': 14,
+    'ytick.labelsize': 14,
+    'legend.fontsize': 14,
+    'legend.title_fontsize': 16,
+    'font.weight': 'bold'
 })
 
-# Function to load and resize logo
-def get_logo(logo_path, size=0.15):
-    try:
-        pil_img = Image.open(logo_path)
-        if pil_img.mode != 'RGBA':
-            pil_img = pil_img.convert('RGBA')
-        target_size = (100, 100)
-        aspect = pil_img.width / pil_img.height
-        if aspect > 1:
-            new_width = target_size[0]
-            new_height = int(new_width / aspect)
-        else:
-            new_height = target_size[1]
-            new_width = int(new_height * aspect)
-        new_img = Image.new('RGBA', target_size, (0, 0, 0, 0))
-        resized_img = pil_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-        paste_x = (target_size[0] - new_width) // 2
-        paste_y = (target_size[1] - new_height) // 2
-        new_img.paste(resized_img, (paste_x, paste_y), resized_img if resized_img.mode == 'RGBA' else None)
-        img_array = np.array(new_img)
-        return OffsetImage(img_array, zoom=size)
-    except Exception as e:
-        print(f"Error loading logo {logo_path}: {e}")
-        return None
-
-# Map model names to their logo files
-LOGO_DIR = "paper/logos"
-LOGO_MAPPING = {
-    "gpt-4o": os.path.join(LOGO_DIR, "openai.png"),
-    "claude-3.7-sonnet": os.path.join(LOGO_DIR, "claude.png"),
-    "claude-3.7-sonnet-thinking": os.path.join(LOGO_DIR, "claude.png"),
-    "gemini-2.0-flash": os.path.join(LOGO_DIR, "gemini.png"),
-    "llama-3.3-70b": os.path.join(LOGO_DIR, "llama.png"),
-    "llama-3.1-405b": os.path.join(LOGO_DIR, "llama.png"),
-    "llama-3.1-70b": os.path.join(LOGO_DIR, "llama.png"),
-    "llama-3.1-8b": os.path.join(LOGO_DIR, "llama.png"),
-    "deepseek-chat": os.path.join(LOGO_DIR, "deepseek.png"),
-    "deepseek-r1": os.path.join(LOGO_DIR, "deepseek.png"),
-    "qwen2.5-32b": os.path.join(LOGO_DIR, "qwen2.png"),
-    "qwq-32b": os.path.join(LOGO_DIR, "qwen2.png"),
-    "o3-mini-high": os.path.join(LOGO_DIR, "openai.png")
-}
 
 def plot_combined_performance(games_data, output_dir):
     """Create a combined figure with all performance metrics."""
-    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(22, 16), dpi=300)  # Increased figure size
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(20, 14), dpi=300)
     fig.patch.set_facecolor('white')
     
     # Plot each performance metric in a subplot
@@ -87,12 +34,12 @@ def plot_combined_performance(games_data, output_dir):
     plot_mathquiz_performance(games_data['mathquiz'], axes[1, 0])
     plot_poker_performance(games_data['poker'], axes[1, 1])
 
-    # Add more space between subplots
-    plt.subplots_adjust(wspace=0.3, hspace=0.4)
+    # Reduce space between subplots
+    plt.subplots_adjust(wspace=0.2, hspace=0.25)
     
     # Adjust layout
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'outcomes_combined.pdf'))
+    plt.savefig(os.path.join(output_dir, 'outcomes_combined.pdf'), bbox_inches='tight')
     plt.close()
 
 def plot_chess_performance(chess_data, ax):
@@ -144,15 +91,15 @@ def plot_chess_performance(chess_data, ax):
     ax.bar(x - width/2, normalized_wins_by_max, width, label='Wins by Max Attempts (%)', color=CUSTOM_COLORS[0])
     ax.bar(x + width/2, normalized_wins_by_checkmate, width, label='Wins by Checkmate (%)', color=CUSTOM_COLORS[1])
     
-    ax.set_xlabel('Models', fontsize=16, labelpad=15)
-    ax.set_ylabel('Win Rate (%)', fontsize=16, labelpad=15)
-    ax.set_title('Chess: Win Type Rates', fontsize=20, fontweight='bold', pad=20)
+    ax.set_xlabel('Models', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_ylabel('Win Rate (%)', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_title('(A) Chess: Win Type Rates', fontsize=22, fontweight='bold', pad=15)
     ax.set_xticks(x)
-    ax.set_xticklabels(sorted_models, rotation=45, ha='right', fontsize=12)
-    ax.legend(fontsize=12, loc='upper right', bbox_to_anchor=(1, 0.98))
+    ax.set_xticklabels(sorted_models, rotation=45, ha='right', fontsize=14, fontweight='bold')
+    ax.legend(fontsize=14, loc='upper right', bbox_to_anchor=(1, 0.98))
     
     # Set y-axis limit to 120% maximum
-    ax.set_ylim(0, 120)
+    ax.set_ylim(0, 130)
     
     # Add logos on top of each bar with more space
     for i, model in enumerate(sorted_models):
@@ -204,15 +151,15 @@ def plot_gandalf_performance(gandalf_data, ax):
     ax.bar(x - width/2, normalized_sentinel_wins, width, label='Sentinel Wins (%)', color=CUSTOM_COLORS[2])
     ax.bar(x + width/2, normalized_infiltrator_wins, width, label='Infiltrator Wins (%)', color=CUSTOM_COLORS[3])
     
-    ax.set_xlabel('Models', fontsize=16, labelpad=15)
-    ax.set_ylabel('Win Rate (%)', fontsize=16, labelpad=15)
-    ax.set_title('Gandalf: Win Type Rates', fontsize=20, fontweight='bold', pad=20)
+    ax.set_xlabel('Models', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_ylabel('Win Rate (%)', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_title('(B) Gandalf: Win Type Rates', fontsize=22, fontweight='bold', pad=15)
     ax.set_xticks(x)
-    ax.set_xticklabels(sorted_models, rotation=45, ha='right', fontsize=12)
-    ax.legend(fontsize=12, loc='upper left', bbox_to_anchor=(0.02, 0.98))
+    ax.set_xticklabels(sorted_models, rotation=45, ha='right', fontsize=14, fontweight='bold')
+    ax.legend(fontsize=14, loc='upper left', bbox_to_anchor=(0.02, 0.98))
     
     # Set y-axis limit to 130% maximum
-    ax.set_ylim(0, 130)
+    ax.set_ylim(0, 140)
     
     # Add logos on top of each bar with more space
     for i, model in enumerate(sorted_models):
@@ -281,15 +228,15 @@ def plot_mathquiz_performance(mathquiz_data, ax):
     ax.bar(x, normalized_verification, width, label='Verification Failed (%)', color=CUSTOM_COLORS[5])
     ax.bar(x + width, normalized_incorrect, width, label='Student Incorrect (%)', color=CUSTOM_COLORS[6])
     
-    ax.set_xlabel('Models', fontsize=16, labelpad=15)
-    ax.set_ylabel('Rate (%)', fontsize=16, labelpad=15)
-    ax.set_title('MathQuiz: Outcome Type Rates', fontsize=20, fontweight='bold', pad=20)
+    ax.set_xlabel('Models', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_ylabel('Rate (%)', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_title('(C) MathQuiz: Outcome Type Rates', fontsize=22, fontweight='bold', pad=15)
     ax.set_xticks(x)
-    ax.set_xticklabels(sorted_models, rotation=45, ha='right', fontsize=12)
-    ax.legend(fontsize=12, loc='upper right', bbox_to_anchor=(1, 0.98))
+    ax.set_xticklabels(sorted_models, rotation=45, ha='right', fontsize=14, fontweight='bold')
+    ax.legend(fontsize=14, loc='upper right', bbox_to_anchor=(1, 0.98))
     
     # Set y-axis limit to 120% maximum
-    ax.set_ylim(0, 120)
+    ax.set_ylim(0, 130)
     
     # Add logos on top of each bar with more space
     for i, model in enumerate(sorted_models):
@@ -341,15 +288,15 @@ def plot_poker_performance(poker_data, ax):
     ax.bar(x - width/2, normalized_avg_chips, width, label='Avg Chips (% of Max)', color=CUSTOM_COLORS[0])
     ax.bar(x + width/2, normalized_max_chips, width, label='Max Chips (% of Max)', color=CUSTOM_COLORS[1])
     
-    ax.set_xlabel('Models', fontsize=16, labelpad=15)
-    ax.set_ylabel('Chip Difference (%)', fontsize=16, labelpad=15)
-    ax.set_title('Poker: Normalized Chip Differences', fontsize=20, fontweight='bold', pad=20)
+    ax.set_xlabel('Models', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_ylabel('Chip Difference (%)', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_title('(D) Poker: Normalized Chip Differences', fontsize=22, fontweight='bold', pad=15)
     ax.set_xticks(x)
-    ax.set_xticklabels(sorted_models, rotation=45, ha='right', fontsize=12)
-    ax.legend(fontsize=12, loc='upper right', bbox_to_anchor=(1, 0.98))
+    ax.set_xticklabels(sorted_models, rotation=45, ha='right', fontsize=14, fontweight='bold')
+    ax.legend(fontsize=14, loc='upper right', bbox_to_anchor=(1, 0.98))
     
     # Set y-axis limit to 120% maximum
-    ax.set_ylim(0, 120)
+    ax.set_ylim(0, 130)
     
     # Add logos on top of each bar with more space
     for i, model in enumerate(sorted_models):
@@ -390,7 +337,7 @@ def plot_chess_moves_histogram(chess_data, output_dir):
     data = [item[2] for item in sorted_data]
     
     # Create a new figure
-    fig, ax = plt.subplots(figsize=(16, 8), dpi=300)  # Increased width for legend
+    fig, ax = plt.subplots(figsize=(14, 7), dpi=300)
     fig.patch.set_facecolor('white')
     ax.set_facecolor('white')
     
@@ -440,17 +387,17 @@ def plot_chess_moves_histogram(chess_data, output_dir):
     
     # Set x-tick labels
     ax.set_xticks(np.arange(1, len(sorted_models) + 1))
-    ax.set_xticklabels(sorted_models)
+    ax.set_xticklabels(sorted_models, fontsize=14, fontweight='bold')
     
     # Set y-axis limit to 60
     ax.set_ylim(0, 60)
     
-    ax.set_title('Valid Chess Move Distributions', fontsize=20, fontweight='bold', pad=20)
-    ax.set_xlabel('Models', fontsize=16, labelpad=15)
-    ax.set_ylabel('Number of Moves', fontsize=16, labelpad=15)
+    ax.set_title('Valid Chess Move Distributions', fontsize=22, fontweight='bold', pad=15)
+    ax.set_xlabel('Models', fontsize=18, fontweight='bold', labelpad=10)
+    ax.set_ylabel('Number of Moves', fontsize=18, fontweight='bold', labelpad=10)
     
     # Rotate x-axis labels for better readability
-    plt.setp(ax.get_xticklabels(), rotation=45, ha='right', fontsize=12)
+    plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
     
     # Customize the grid
     ax.grid(axis='y', linestyle='--', alpha=0.3, color='#333333')
@@ -463,14 +410,13 @@ def plot_chess_moves_histogram(chess_data, output_dir):
         spine.set_linewidth(0.5)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'chess_moves_violin.pdf'))
+    plt.savefig(os.path.join(output_dir, 'chess_moves_violin.pdf'), bbox_inches='tight')
     plt.close()
 
 def main():
-    results_path = "/Users/haidark/Google Drive/My Drive/Zero Sum Eval/rankings-3-9-25-backup"
     output_dir = "paper/figures/"
     os.makedirs(output_dir, exist_ok=True)
-    games_data = get_all_stats(results_path)
+    games_data = get_all_stats(ROOT_DIR)
     
     # Generate visualizations as PDFs
     plot_combined_performance(games_data, output_dir)
