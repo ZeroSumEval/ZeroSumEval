@@ -1,3 +1,9 @@
+[![Archived](https://img.shields.io/badge/status-archived-red)](https://github.com/facebookresearch/ZeroSumEval)
+
+# 🚨 This repository is now archived 🚨
+## Find its new home at Meta Research here: [github.com/facebookresearch/ZeroSumEval](https://github.com/facebookresearch/ZeroSumEval)
+
+---
 <p align="center">
   <img align="center" src="logo.png" width="380px" />
 </p>
